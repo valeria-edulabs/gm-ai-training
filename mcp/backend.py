@@ -1,5 +1,6 @@
 # https://www.alltrails.com/mcp
 
+from langchain_core.output_parsers import StrOutputParser
 import asyncio
 from langchain_mcp_adapters.client import MultiServerMCPClient  
 from langchain.agents import create_agent
@@ -22,19 +23,20 @@ async def main():
     )
 
     tools = await client.get_tools()
-    # for tool in tools:
-    #     print(tool.name)
-    #     print(tool.description)
-    #     # print(tool.args)
-    #     print("---\n")
+    for tool in tools:
+        print(tool.name)
+        print(tool.description)
+        # print(tool.args)
+        print("---\n")
     agent = create_agent(
         llm,
         tools  
     )
-    response = await agent.ainvoke(
-        {"messages": [{"role": "user", "content": "which hikes can you suggest in israel?"}]}
-    )
-    print(response)
+    # response = await agent.ainvoke(
+    #     {"messages": [{"role": "user", "content": "which hikes can you suggest in Israel?"}]}
+    # )
+    # parser = StrOutputParser()
+    # print(parser.invoke(response["messages"][-1]))
 
 if __name__ == "__main__":
     asyncio.run(main())
