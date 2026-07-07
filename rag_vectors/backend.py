@@ -23,7 +23,7 @@ retriever = VECTORSTORE.as_retriever(search_kwargs={"k": 3})
 retriever_tool = create_retriever_tool(
     retriever,
     name="retrieve_mortgage_info",
-    description="Searches and returns documents regarding mortgage information"
+    description="Searches and returns documents regarding mortgage information in Bank Hapoalim"
 )
 tools = [retriever_tool]
 
