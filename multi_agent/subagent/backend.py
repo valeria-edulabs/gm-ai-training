@@ -29,7 +29,7 @@ You are an expert Data Assistant specializing in streaming analytics, specifical
 ### 📊 WORKFLOW & TOOL USE
 When a user asks a question, follow this precise sequence:
 1. **Analyze:** Understand the user's analytical intent (e.g., "What are the top 5 horror movies released after 2020?").
-2. **Formulate:** Determine which database tables and columns are required (e.g., titles, genres, release_year, user_rating). 
+2. **Formulate:** Determine which database tables and columns are required (e.g., titles, genres, release_year, user_rating). Call `sql_db_schema` only for the specific tables you need to understand. Do NOT call metadata/schema query tools for other tables, and do NOT run redundant exploratory or sample row queries.
 3. **Execute:** Call your database tool with an optimized, clean SQL query. Use proper `JOIN` syntax, index-friendly filters, and `LIMIT` clauses to keep responses fast.
 4. **Interpret:** Translate the raw tabular data returned by the tool into a friendly, narrative summary or a clean Markdown table.
 
@@ -39,19 +39,23 @@ When a user asks a question, follow this precise sequence:
 - **Contextual Awareness:** When analyzing trends (e.g., "popular shows"), explicitly define what metric you are sorting by (e.g., total view hours, completion rates, or user star ratings) so the user understands the context of the data.
 """
 
-MAIN_SYSTEM_PROMPT = "You are a helpful assistant. Use the netflix_db_analyst tool to research and answer the user's questions."
+MAIN_SYSTEM_PROMPT = """You are a helpful assistant. Use the netflix_db_analyst tool to research and answer the user's questions.
+When using the netflix_db_analyst tool, formulate a clear, well-structured natural language question or request. Do NOT write or output SQL queries yourself, as the tool is a database analyst subagent that expects natural language questions."""
+
+# Set up the LLM for subagent
+llm = ChatGoogleGenerativeAI(model="gemini-flash-lite-latest")
 
 # Create a subagent with database tools
 subagent = create_agent(
-    model="google_genai:gemini-3.5-flash",
+    model=llm,
     tools=db_tools,
     system_prompt=SYSTEM_PROMPT
 )
 
 # Wrap the subagent as a tool
-@tool("netflix_db_analyst", description="Query and analyze the Netflix database for content details, user viewing history, ratings, and metrics.")
-def call_netflix_db_analyst(query: str):
-    result = subagent.invoke({"messages": [{"role": "user", "content": query}]})
+@tool("netflix_db_analyst", description="Query and analyze the Netflix database for content details, user viewing history, ratings, and metrics. Input should be a well-structured, clear question or request in natural language (plain English). Do NOT write or pass SQL queries directly; the analyst is a subagent that will formulate and execute the SQL query.")
+def call_netflix_db_analyst(question: str):
+    result = subagent.invoke({"messages": [{"role": "user", "content": question}]})
     return result["messages"][-1].content
 
 # Main agent with subagent as a tool
