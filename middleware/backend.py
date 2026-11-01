@@ -96,3 +96,10 @@ def stream(text: str, thread_id: str):
 
 
 
+
+
+def save_graph_png():
+    tax_agent.get_graph().draw_mermaid_png(output_file_path="graph.png")
+
+if __name__ == '__main__':
+    save_graph_png()

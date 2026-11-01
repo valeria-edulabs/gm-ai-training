@@ -120,7 +120,7 @@ data_agent = create_agent(
     tools=[python_interpreter],
     checkpointer=memory,
     system_prompt=SYSTEM_PROMPT,
-    # middleware=[hitl_middleware]
+    middleware=[hitl_middleware]
 )
 
 def stream(text: str, thread_id: str):
@@ -140,3 +140,10 @@ def resume_stream(decision: dict, thread_id: str):
         stream_mode="updates"
     ):
         yield chunk
+
+
+def save_graph_png():
+    data_agent.get_graph().draw_mermaid_png(output_file_path="graph.png")
+
+if __name__ == '__main__':
+    save_graph_png()
