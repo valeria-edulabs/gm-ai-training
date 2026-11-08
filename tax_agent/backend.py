@@ -1,14 +1,14 @@
 from dotenv import load_dotenv
+from langchain.chat_models import init_chat_model
 from langchain_core.tools import tool
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import MemorySaver
 from langchain.agents import create_agent
 
 load_dotenv()
 
-llm = ChatGoogleGenerativeAI(model="gemini-flash-lite-latest")
+llm = init_chat_model("google_genai:gemini-3.5-flash-lite")
 
-memory = MemorySaver()
+# memory = MemorySaver()
 
 @tool
 def calculate_income_tax(annual_income: float):
@@ -64,7 +64,7 @@ tax_agent = create_agent(
     llm,
     tools,
     system_prompt=SYSTEM_PROMPT,
-    checkpointer=memory
+    # checkpointer=memory
 )
 
 

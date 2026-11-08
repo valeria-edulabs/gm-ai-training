@@ -1,13 +1,13 @@
 import pprint
 
 from dotenv import load_dotenv
+from langchain.chat_models import init_chat_model
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 # Load environment variables from .env file
 load_dotenv()
 
-
-llm = ChatGoogleGenerativeAI(model="gemini-flash-lite-latest")
+llm = init_chat_model("google_genai:gemini-3.5-flash-lite")
 
 json_schema = {
     "title": "person",
@@ -97,6 +97,3 @@ Since 2015, Trump's leadership style and political agenda—often referred to as
 """
 result = llm.with_structured_output(json_schema).invoke(text)
 pprint.pprint(result)
-
-# pip install streamlit
-# import streamlit as st
